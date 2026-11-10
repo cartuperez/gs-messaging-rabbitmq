@@ -15,6 +15,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     private String username;
     @org.springframework.beans.factory.annotation.Value("${spring.rabbitmq.password}")
     private String password;
+    @org.springframework.beans.factory.annotation.Value("${spring.rabbitmq.virtual-host:/}")
+    private String virtualHost;
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws").withSockJS();
@@ -24,6 +26,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registry.setApplicationDestinationPrefixes("/app");
         registry.enableStompBrokerRelay("/topic", "/queue")
                 .setRelayHost(host).setRelayPort(port)
+                .setVirtualHost(virtualHost)
                 .setClientLogin(username).setClientPasscode(password)
                 .setSystemLogin(username).setSystemPasscode(password);
         registry.setPreservePublishOrder(true);

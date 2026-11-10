@@ -9,6 +9,7 @@ spring:
     port: ${RABBITMQ_AMQP_PORT:5672}
     username: ${RABBITMQ_USER:chat}
     password: ${RABBITMQ_PASSWORD:chat-local}
+    virtual-host: ${RABBITMQ_VHOST:/}
 chat:
   stomp:
     port: ${RABBITMQ_STOMP_PORT:61613}

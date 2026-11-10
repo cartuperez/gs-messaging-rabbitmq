@@ -28,6 +28,8 @@ Credenciales locales por defecto: `chat` / `chat-local`. Los puertos del contene
 
 `Dockerfile.rabbitmq` habilita `rabbitmq_stomp`. `application.yaml` configura AMQP en 5672 y STOMP en 61613. `WebSocketConfig` usa `enableStompBrokerRelay("/topic", "/queue")`: los mensajes del chat pasan por RabbitMQ. El navegador conecta mediante SockJS a `/ws` y usa `/app/chat.addUser`, `/app/chat.sendMessage` y `/topic/public`.
 
+El relay fija el virtual host del broker en `/`, configurable con `RABBITMQ_VHOST` si ese virtual host ya existe en RabbitMQ. Así el encabezado `host` del cliente web no se interpreta como un virtual host distinto. La cola AMQP `spring-boot` es durable para ser compatible con RabbitMQ 4.4, que rechaza por defecto las colas transitorias no exclusivas del ejemplo original.
+
 La aplicación queda ejecutándose como servidor web. Se conserva el productor/receptor AMQP del ejemplo base, que imprime `Hello from RabbitMQ!` al arrancar.
 
 ## Comprobar la conexión
@@ -45,6 +47,18 @@ Comprobar que el plugin STOMP esté habilitado y que aparezcan los listeners 567
 
 La prueba heredada del ejemplo tolera la ausencia del broker. Por eso un `test` exitoso por sí solo no demuestra la conexión real: se necesitan las comprobaciones anteriores.
 
+Con el servidor ejecutándose, también se puede verificar la conexión, el ingreso, la difusión a dos clientes y la salida con Node.js 22 o superior:
+
+```powershell
+node scripts/verify-chat.mjs 8080
+```
+
+Si Spring se inició en otro puerto, reemplazar `8080` por ese puerto.
+
 Para detener el contenedor de esta actividad: `docker compose down`.
+
+## Verificación realizada
+
+El 9 de noviembre de 2026 se inició RabbitMQ 4.4.0 con Docker Compose y se comprobaron los listeners AMQP/STOMP y el plugin `rabbitmq_stomp`. Spring recibió el mensaje AMQP `Hello from RabbitMQ!`. El script de dos clientes pasó la conexión STOMP, suscripción, ingreso, difusión de mensajes, uso del nombre registrado en la sesión y aviso de salida a través del broker real.
 
 Base: [Spring Getting Started — Messaging with RabbitMQ](https://spring.io/guides/gs/messaging-rabbitmq). Se conservan sus licencias. Referencias: [relay STOMP de Spring](https://docs.spring.io/spring-framework/reference/web/websocket/stomp/handle-broker-relay.html) y [plugin STOMP de RabbitMQ](https://www.rabbitmq.com/docs/stomp).
