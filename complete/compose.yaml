@@ -1,9 +1,17 @@
 services:
   rabbitmq:
-    image: 'rabbitmq:latest'
+    build:
+      context: .
+      dockerfile: Dockerfile.rabbitmq
     environment:
-      - 'RABBITMQ_DEFAULT_PASS=secret'
-      - 'RABBITMQ_DEFAULT_USER=myuser'
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-chat}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-chat-local}
     ports:
-      - '5672'
-
+      - "127.0.0.1:5672:5672"
+      - "127.0.0.1:61613:61613"
+      - "127.0.0.1:15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 12

@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: chat-rabbitmq
+  docker:
+    compose:
+      enabled: false
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_AMQP_PORT:5672}
+    username: ${RABBITMQ_USER:chat}
+    password: ${RABBITMQ_PASSWORD:chat-local}
+chat:
+  stomp:
+    port: ${RABBITMQ_STOMP_PORT:61613}
